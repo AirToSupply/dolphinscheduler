@@ -1937,3 +1937,54 @@ CREATE TABLE t_ds_alert_send_status (
   PRIMARY KEY (`id`),
   UNIQUE KEY `alert_send_status_unique` (`alert_id`,`alert_plugin_instance_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for t_ds_node_metrics
+-- ----------------------------
+DROP TABLE IF EXISTS `t_ds_node_metrics`;
+CREATE TABLE `t_ds_node_metrics` (
+  `id`          int(11) NOT NULL AUTO_INCREMENT,
+  `ip`          varchar(32) NOT NULL,
+  `hostname`    varchar(100) DEFAULT NULL,
+  `state`       tinyint(4) DEFAULT NULL COMMENT '0:offline,1:online',
+  `memory`      double DEFAULT NULL,
+  `cpu`         int(11) DEFAULT NULL,
+  `update_time` datetime NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for t_ds_node_disk
+-- ----------------------------
+DROP TABLE IF EXISTS `t_ds_node_disk`;
+CREATE TABLE `t_ds_node_disk` (
+  `id`          int(11) NOT NULL AUTO_INCREMENT,
+  `ip`          varchar(32) NOT NULL,
+  `hostname`    varchar(100) DEFAULT NULL,
+  `volume`      varchar(255) DEFAULT NULL,
+  `mount`       varchar(255) DEFAULT NULL,
+  `total`       bigint(20) DEFAULT NULL,
+  `used`        bigint(20) DEFAULT NULL,
+  `available`   bigint(20) DEFAULT NULL,
+  `disk_usage`  double DEFAULT NULL,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for t_ds_node_metrics_snapshot
+-- ----------------------------
+DROP TABLE IF EXISTS `t_ds_node_metrics_snapshot`;
+CREATE TABLE `t_ds_node_metrics_snapshot` (
+  `id`           int(11) NOT NULL AUTO_INCREMENT,
+  `report_time`  datetime NOT NULL,
+  `ip`           varchar(32) NOT NULL,
+  `hostname`     varchar(100) DEFAULT NULL,
+  `cpu_usage`    double DEFAULT NULL,
+  `memory_usage` double DEFAULT NULL,
+  `disk_usage`   double DEFAULT NULL,
+  `load_average` double DEFAULT NULL,
+  `update_time`  datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -26,6 +26,7 @@ import org.apache.dolphinscheduler.plugin.task.api.ProcessUtils;
 import org.apache.dolphinscheduler.plugin.task.api.TaskExecutionContext;
 import org.apache.dolphinscheduler.plugin.task.api.TaskExecutionContextCacheManager;
 import org.apache.dolphinscheduler.server.worker.message.MessageRetryRunner;
+import org.apache.dolphinscheduler.server.worker.metrics.WorkerNodeExporter;
 import org.apache.dolphinscheduler.server.worker.rpc.WorkerRpcServer;
 import org.apache.dolphinscheduler.server.worker.registry.WorkerRegistryClient;
 import org.apache.dolphinscheduler.server.worker.rpc.WorkerRpcClient;
@@ -92,6 +93,9 @@ public class WorkerServer implements IStoppable {
     @Autowired
     private MessageRetryRunner messageRetryRunner;
 
+    @Autowired
+    private WorkerNodeExporter workerNodeExporter;
+
     /**
      * worker server startup, not use web service
      *
@@ -111,6 +115,8 @@ public class WorkerServer implements IStoppable {
         this.workerRegistryClient.registry();
         this.workerRegistryClient.setRegistryStoppable(this);
         this.workerRegistryClient.handleDeadServer();
+
+        this.workerNodeExporter.start();
 
         this.workerManagerThread.start();
 

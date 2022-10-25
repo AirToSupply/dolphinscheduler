@@ -87,6 +87,25 @@ public class MasterConfig implements Validator {
     private double reservedMemory = 0.3;
     private Duration failoverInterval = Duration.ofMinutes(10);
     private boolean killYarnJobWhenTaskFailover = true;
+
+    /**
+     * node export enable
+     */
+    private boolean nodeExportEnable = false;
+    /**
+     * node export interval
+     */
+    private Duration nodeExportInterval = Duration.ofSeconds(30);
+    /**
+     * node export tick
+     */
+    private int nodeExportTick = 10;
+    /**
+     * node export retention
+     */
+    private Duration nodeExportRetentionSeconds = Duration.ofSeconds(32592000);
+
+
     /**
      * ip:listenPort
      */
@@ -135,6 +154,15 @@ public class MasterConfig implements Validator {
         }
         if (masterConfig.getHeartbeatErrorThreshold() <= 0) {
             errors.rejectValue("heartbeat-error-threshold", null, "should be a positive value");
+        }
+        if (masterConfig.getNodeExportInterval().toMillis() <= 0) {
+            errors.rejectValue("node-export-interval", null, "should be a valid duration");
+        }
+        if (masterConfig.getNodeExportTick() <= 0) {
+            errors.rejectValue("node-export-tick", null, "should be a positive value");
+        }
+        if (masterConfig.getNodeExportRetentionSeconds().toMillis() <= 0) {
+            errors.rejectValue("node-export-retention-seconds", null, "should be a valid duration");
         }
         masterConfig.setMasterAddress(NetUtils.getAddr(masterConfig.getListenPort()));
     }

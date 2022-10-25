@@ -117,6 +117,14 @@ master:
   failover-interval: 10m
   # kill yarn jon when failover taskInstance, default true
   kill-yarn-job-when-task-failover: true
+  # node export enable
+  node-export-enable: true
+  # node export interval
+  node-export-interval: 30s
+  # node export tick
+  node-export-tick: 10
+  # node export retention
+  node-export-retention-seconds: 2592000s
 
 server:
   port: 5679

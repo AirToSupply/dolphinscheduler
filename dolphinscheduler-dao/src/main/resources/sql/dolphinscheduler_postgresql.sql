@@ -1917,3 +1917,55 @@ CREATE TABLE t_ds_alert_send_status (
     PRIMARY KEY (id),
     CONSTRAINT alert_send_status_unique UNIQUE (alert_id,alert_plugin_instance_id)
 );
+
+-- ----------------------------
+-- Table structure for t_ds_node_metrics
+-- ----------------------------
+DROP TABLE IF EXISTS t_ds_node_metrics;
+CREATE TABLE t_ds_node_metrics (
+    id          serial NOT NULL,
+    ip          varchar NOT NULL,
+    hostname    varchar NULL,
+    state       int DEFAULT NULL,
+    memory      float8 NULL,
+    cpu         int DEFAULT NULL,
+    update_time timestamp DEFAULT NULL,
+    description text,
+    CONSTRAINT t_ds_node_metrics_pk PRIMARY KEY (id)
+);
+comment on column t_ds_node_metrics.state is '0:offline,1:online';
+
+-- ----------------------------
+-- Table structure for t_ds_node_disk
+-- ----------------------------
+DROP TABLE IF EXISTS t_ds_node_disk;
+CREATE TABLE t_ds_node_disk (
+    id          serial NOT NULL,
+    ip          varchar NOT NULL,
+    hostname    varchar NULL,
+    volume      varchar DEFAULT NULL,
+    mount       varchar DEFAULT NULL,
+    total       bigint DEFAULT NULL,
+    used        bigint DEFAULT NULL,
+    available   bigint DEFAULT NULL,
+    disk_usage  float8 DEFAULT NULL,
+    update_time timestamp NOT NULL,
+    CONSTRAINT t_ds_node_disk_pk PRIMARY KEY (id)
+);
+
+-- ----------------------------
+-- Table structure for t_ds_node_metrics_snapshot
+-- ----------------------------
+DROP TABLE IF EXISTS t_ds_node_metrics_snapshot;
+CREATE TABLE t_ds_node_metrics_snapshot (
+    id           serial NOT NULL,
+    report_time  timestamp DEFAULT NULL,
+    ip           varchar NOT NULL,
+    hostname     varchar NULL,
+    cpu_usage    float8 NULL,
+    memory_usage float8 NULL,
+    disk_usage   float8 NULL,
+    load_average float8 NULL,
+    update_time  timestamp DEFAULT NULL,
+    CONSTRAINT t_ds_node_metrics_snapshot_pk PRIMARY KEY (id)
+);

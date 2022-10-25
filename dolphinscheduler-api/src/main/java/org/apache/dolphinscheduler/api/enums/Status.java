@@ -308,6 +308,8 @@ public enum Status {
      * for monitor
      */
     QUERY_DATABASE_STATE_ERROR(70001, "query database state error", "查询数据库状态错误"),
+    QUERY_HOST_LIST_ERROR(70002, "query host list error", "查询主机列表错误"),
+    QUERY_HOST_METRICS_ERROR(70003, "query host metrics error", "查询主机指标错误"),
 
     CREATE_ACCESS_TOKEN_ERROR(70010, "create access token error", "创建访问token错误"),
     GENERATE_TOKEN_ERROR(70011, "generate token error", "生成token错误"),
@@ -403,7 +405,10 @@ public enum Status {
     QUERY_AUTHORIZED_NAMESPACE_ERROR(1300013, "query authorized namespace error", "查询授权命名空间错误"),
     QUERY_CAN_USE_K8S_CLUSTER_ERROR(1300014, "login user query can used k8s cluster list error", "查询可用k8s集群错误"),
     RESOURCE_FULL_NAME_TOO_LONG_ERROR(1300015, "resource's fullname is too long error", "资源文件名过长"),
-    TENANT_FULL_NAME_TOO_LONG_ERROR(1300016, "tenant's fullname is too long error", "租户名过长");
+    TENANT_FULL_NAME_TOO_LONG_ERROR(1300016, "tenant's fullname is too long error", "租户名过长"),
+
+    UPDATE_NODE_METRICS_ERROR(1400001, "failed to update node monitoring indicators", "更新节点监控指标失败"),
+    NODE_EXPORT_ERROR(1400002, "failed to collect node monitoring indicators", "采集节点监控指标失败");
 
     private final int code;
     private final String enMsg;

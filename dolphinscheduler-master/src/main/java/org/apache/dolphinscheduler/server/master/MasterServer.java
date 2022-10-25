@@ -21,6 +21,7 @@ import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.IStoppable;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.common.thread.ThreadUtils;
+import org.apache.dolphinscheduler.server.master.metrics.MasterNodeExporter;
 import org.apache.dolphinscheduler.server.master.registry.MasterRegistryClient;
 import org.apache.dolphinscheduler.server.master.rpc.MasterRPCServer;
 import org.apache.dolphinscheduler.server.master.runner.EventExecuteService;
@@ -73,6 +74,9 @@ public class MasterServer implements IStoppable {
     @Autowired
     private MasterRPCServer masterRPCServer;
 
+    @Autowired
+    private MasterNodeExporter masterNodeExporter;
+
     public static void main(String[] args) {
         Thread.currentThread().setName(Constants.THREAD_NAME_MASTER_SERVER);
         SpringApplication.run(MasterServer.class);
@@ -93,6 +97,8 @@ public class MasterServer implements IStoppable {
         this.masterRegistryClient.init();
         this.masterRegistryClient.start();
         this.masterRegistryClient.setRegistryStoppable(this);
+
+        this.masterNodeExporter.start();
 
         this.masterSchedulerBootstrap.init();
         this.masterSchedulerBootstrap.start();

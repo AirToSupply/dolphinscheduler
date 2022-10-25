@@ -30,13 +30,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.math.RoundingMode;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,11 @@ import org.slf4j.LoggerFactory;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
+import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OSFileStore;
+import oshi.software.os.OSProcess;
+import oshi.software.os.OperatingSystem;
 
 /**
  * os utils
@@ -63,6 +66,7 @@ public class OSUtils {
     public static final double NEGATIVE_ONE = -1;
 
     private static final HardwareAbstractionLayer hal = SI.getHardware();
+    private static final OperatingSystem os = SI.getOperatingSystem();
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     private static long prevTickTime = 0L;
     private static double cpuUsage = 0.0D;
@@ -76,6 +80,28 @@ public class OSUtils {
      * avoid the thread safety problem of multi-thread operation
      */
     private static final Pattern PATTERN = Pattern.compile("\\s+");
+
+    public static String ip() {
+        return NetUtils.getHost();
+    }
+
+    public static String localhost() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            logger.error("server ip exception: ", e);
+        }
+        return null;
+    }
+
+    public static String hostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            logger.error("server hostname exception: ", e);
+        }
+        return null;
+    }
 
     /**
      * get memory usage
@@ -109,6 +135,22 @@ public class OSUtils {
     }
 
     /**
+     * get physical memory size
+     * <p>
+     * Keep 2 decimal
+     *
+     * @return physical Memory Size, unit: G
+     */
+    public static double physicalMemorySize() {
+        GlobalMemory memory = hal.getMemory();
+        double availablePhysicalMemorySize = memory.getTotal() / 1024.0 / 1024 / 1024;
+
+        DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(availablePhysicalMemorySize));
+    }
+
+    /**
      * load average
      *
      * @return load average
@@ -128,6 +170,15 @@ public class OSUtils {
         DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
         df.setRoundingMode(RoundingMode.HALF_UP);
         return Double.parseDouble(df.format(loadAverage));
+    }
+
+    /**
+     * get logical cpu count
+     *
+     * @return logical cpu count
+     */
+    public static int logicalProcessorCount() {
+        return hal.getProcessor().getLogicalProcessorCount();
     }
 
     /**
@@ -156,6 +207,56 @@ public class OSUtils {
         return Double.parseDouble(df.format(cpuUsage));
     }
 
+    /**
+     * get file store detail
+     *
+     * @return file store list (df -h)
+     */
+    public static List<OSFileStore> getFileStores() {
+        return os.getFileSystem().getFileStores();
+    }
+
+    /**
+     * get disk store detail
+     *
+     * @return disk store list
+     */
+    public static List<HWDiskStore> getDiskStores() {
+        return hal.getDiskStores();
+    }
+
+    /**
+     * get disk usage
+     *
+     * @return disk usage
+     */
+    public static double diskUsage() {
+        double diskUsage = 0.0D;
+        long free = 0L;
+        long total = 0L;
+
+        List<OSFileStore> fileStores = getFileStores().stream().filter(
+            osFileStore -> osFileStore.getVolume().startsWith("/dev/")).collect(Collectors.toList());
+        for (OSFileStore fileStore : fileStores) {
+            free += fileStore.getFreeSpace();
+            total += fileStore.getTotalSpace();
+        }
+
+        if (Long.valueOf(total).compareTo(0L) == 0) {
+            return NEGATIVE_ONE;
+        }
+
+        diskUsage = (total - free) * 1.0D / total;
+
+        if (Double.isNaN(diskUsage)) {
+            return NEGATIVE_ONE;
+        }
+
+        DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(diskUsage));
+    }
+
     public static List<String> getUserList() {
         try {
             if (SystemUtils.IS_OS_MAC) {
@@ -170,6 +271,22 @@ public class OSUtils {
         }
 
         return Collections.emptyList();
+    }
+
+    public static int processCount() {
+        return os.getProcessCount();
+    }
+
+    public static List<OSProcess> processes() {
+        return os.getProcesses();
+    }
+
+    public static OSProcess process(int processeId) {
+        return os.getProcess(processeId);
+    }
+
+    public static List<OSProcess> processes(Collection<Integer> pids) {
+        return os.getProcesses(pids);
     }
 
     /**

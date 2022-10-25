@@ -52,6 +52,16 @@ public class WorkerConfig implements Validator {
     private Set<String> groups = Sets.newHashSet("default");
     private String alertListenHost = "localhost";
     private int alertListenPort = 50052;
+
+    /**
+     * node export enable
+     */
+    private boolean nodeExportEnable = false;
+    /**
+     * node export interval
+     */
+    private Duration nodeExportInterval = Duration.ofSeconds(30);
+
     /**
      * This field doesn't need to set at config file, it will be calculated by workerIp:listenPort
      */
@@ -76,6 +86,9 @@ public class WorkerConfig implements Validator {
         }
         if (workerConfig.getHeartbeatErrorThreshold() <= 0) {
             errors.rejectValue("heartbeat-error-threshold", null, "should be a positive value");
+        }
+        if (workerConfig.getNodeExportInterval().toMillis() <= 0) {
+            errors.rejectValue("node-export-interval", null, "should be a valid duration");
         }
         workerConfig.setWorkerAddress(NetUtils.getAddr(workerConfig.getListenPort()));
     }

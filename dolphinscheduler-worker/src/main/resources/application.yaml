@@ -80,6 +80,10 @@ worker:
   # alert server listen host
   alert-listen-host: localhost
   alert-listen-port: 50052
+  # node export enable
+  node-export-enable: true
+  # node export interval
+  node-export-interval: 30s
 
 server:
   port: 1235
