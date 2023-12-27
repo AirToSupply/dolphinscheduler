@@ -21,19 +21,30 @@ spring:
     time-zone: UTC
     date-format: "yyyy-MM-dd HH:mm:ss"
 
+#registry:
+#  type: zookeeper
+#  zookeeper:
+#    namespace: dolphinscheduler
+#    connect-string: localhost:2181
+#    retry-policy:
+#      base-sleep-time: 60ms
+#      max-sleep: 300ms
+#      max-retries: 5
+#    session-timeout: 30s
+#    connection-timeout: 9s
+#    block-until-connected: 600ms
+#    digest: ~
 registry:
-  type: zookeeper
-  zookeeper:
-    namespace: dolphinscheduler
-    connect-string: localhost:2181
-    retry-policy:
-      base-sleep-time: 60ms
-      max-sleep: 300ms
-      max-retries: 5
-    session-timeout: 30s
-    connection-timeout: 9s
-    block-until-connected: 600ms
-    digest: ~
+  type: jdbc
+  term-refresh-interval: 2s
+  term-expire-times: 3
+  hikari-config:
+    jdbc-url: jdbc:mysql://127.0.0.1:3306/dolphinscheduler?userSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: ubuntu@ec2
+    maximum-pool-size: 5
+    connection-timeout: 9000
+    idle-timeout: 600000
 
 worker:
   # worker listener port
@@ -51,7 +62,7 @@ worker:
   # worker max cpuload avg, only higher than the system cpu load average, worker server can be dispatched tasks. default value 1: will use 100% cpu.
   max-cpu-load-avg: 1
   # worker reserved memory, only lower than system available memory, worker server can be dispatched tasks. default value 0.3, only the available memory is higher than 30%, worker server can receive task.
-  reserved-memory: 0.3
+  reserved-memory: 0.1
   registry-disconnect-strategy:
     # The disconnect strategy: stop, waiting
     strategy: waiting

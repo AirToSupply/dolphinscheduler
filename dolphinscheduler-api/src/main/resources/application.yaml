@@ -40,10 +40,14 @@ spring:
   messages:
     basename: i18n/messages
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5432/dolphinscheduler
+    # driver-class-name: org.postgresql.Driver
+    # url: jdbc:postgresql://127.0.0.1:5432/dolphinscheduler
+    # username: root
+    # password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/dolphinscheduler?userSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: root
+    password: ubuntu@ec2
     hikari:
       connection-test-query: select 1
       minimum-idle: 5
@@ -101,19 +105,30 @@ management:
     tags:
       application: ${spring.application.name}
 
+#registry:
+#  type: zookeeper
+#  zookeeper:
+#    namespace: dolphinscheduler
+#    connect-string: localhost:2181
+#    retry-policy:
+#      base-sleep-time: 60ms
+#      max-sleep: 300ms
+#      max-retries: 5
+#    session-timeout: 60s
+#    connection-timeout: 15s
+#    block-until-connected: 15s
+#    digest: ~
 registry:
-  type: zookeeper
-  zookeeper:
-    namespace: dolphinscheduler
-    connect-string: localhost:2181
-    retry-policy:
-      base-sleep-time: 60ms
-      max-sleep: 300ms
-      max-retries: 5
-    session-timeout: 60s
-    connection-timeout: 15s
-    block-until-connected: 15s
-    digest: ~
+  type: jdbc
+  term-refresh-interval: 2s
+  term-expire-times: 3
+  hikari-config:
+    jdbc-url: jdbc:mysql://127.0.0.1:3306/dolphinscheduler?userSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: ubuntu@ec2
+    maximum-pool-size: 5
+    connection-timeout: 9000
+    idle-timeout: 600000
 
 api:
   audit-enable: false

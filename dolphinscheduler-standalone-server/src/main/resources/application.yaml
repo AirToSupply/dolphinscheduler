@@ -36,10 +36,14 @@ spring:
     init:
       schema-locations: classpath:sql/dolphinscheduler_h2.sql
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:dolphinscheduler;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=true
-    username: sa
-    password: ""
+    # driver-class-name: org.h2.Driver
+    # url: jdbc:h2:mem:dolphinscheduler;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=true
+    # username: sa
+    # password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/dolphinscheduler?userSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: ubuntu@ec2
   quartz:
     job-store-type: jdbc
     jdbc:
@@ -74,19 +78,30 @@ spring:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
 
+#registry:
+#  type: zookeeper
+#  zookeeper:
+#    namespace: dolphinscheduler
+#    connect-string: localhost:2181
+#    retry-policy:
+#      base-sleep-time: 60ms
+#      max-sleep: 300ms
+#      max-retries: 5
+#    session-timeout: 30s
+#    connection-timeout: 9s
+#    block-until-connected: 600ms
+#    digest: ~
 registry:
-  type: zookeeper
-  zookeeper:
-    namespace: dolphinscheduler
-    connect-string: localhost:2181
-    retry-policy:
-      base-sleep-time: 60ms
-      max-sleep: 300ms
-      max-retries: 5
-    session-timeout: 30s
-    connection-timeout: 9s
-    block-until-connected: 600ms
-    digest: ~
+  type: jdbc
+  term-refresh-interval: 2s
+  term-expire-times: 3
+  hikari-config:
+    jdbc-url: jdbc:mysql://127.0.0.1:3306/dolphinscheduler?userSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: ubuntu@ec2
+    maximum-pool-size: 5
+    connection-timeout: 9000
+    idle-timeout: 600000
 
 security:
   authentication:
